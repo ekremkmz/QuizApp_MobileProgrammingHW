@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -75,16 +76,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
     }
 
-    public boolean addQuestion(int user_id, String title, int level, String choices, int answer, String content_type, String content_path) {
+    public boolean addQuestion(Question question) {
         openDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("user_id", user_id);
-        cv.put("title", title);
-        cv.put("level", level);
-        cv.put("choices", choices);
-        cv.put("answer", answer);
-        cv.put("content_type", content_type);
-        cv.put("content_path", content_path);
+        cv.put("user_id", question.getUser_Id());
+        cv.put("title", question.getTitle());
+        cv.put("level", question.getLevel());
+        cv.put("choices", String.join("$$$", question.getChoices()));
+        cv.put("answer", question.getAnswer());
+        cv.put("content_type", question.getContent_type());
+        cv.put("content_path", question.getContent_path());
+
         long result = DB.insert("questions", null, cv);
 
         if (result > -1)
@@ -95,16 +97,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<Question> getQuestions(int user_id) {
         openDatabase();
-        String[] columns = {"title", "level", "choices", "answer", "content_type", "content_path"};
+        String[] columns = {"title", "level", "choices", "answer", "content_type", "content_path", "id", "user_id"};
 
         String[] args = {String.valueOf(user_id)};
         Cursor c = DB.query("questions", columns, "user_id=?", args, null, null, null);
         ArrayList<Question> questionArrayList = new ArrayList<>();
         while (c.moveToNext()) {
             ArrayList<String> choices = new ArrayList<>(Arrays.asList(c.getString(2).split("\\Q$$$\\E")));
-            questionArrayList.add(new Question(c.getString(0), c.getInt(1), choices, c.getInt(3), c.getString(4), c.getString(5)));
+            questionArrayList.add(new Question(c.getString(0), c.getInt(1), choices, c.getInt(3), c.getString(4), c.getString(5), c.getInt(6), c.getInt(7)));
         }
         return questionArrayList;
+    }
+
+    public boolean deleteQuestion(Question question) {
+        openDatabase();
+        int result = DB.delete("questions", "id=?", new String[]{String.valueOf(question.getId())});
+        if (result > -1)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean updateQuestion(Question question) {
+        openDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("user_id", question.getUser_Id());
+        cv.put("title", question.getTitle());
+        cv.put("level", question.getLevel());
+        cv.put("choices", String.join("$$$", question.getChoices()));
+        cv.put("answer", question.getAnswer());
+        cv.put("content_type", question.getContent_type());
+        cv.put("content_path", question.getContent_path());
+        long result = DB.update("questions", cv, "id=?", new String[]{String.valueOf(question.getId())});
+        if (result > -1)
+            return true;
+        else
+            return false;
     }
 
     public boolean checkMail(String mail) {

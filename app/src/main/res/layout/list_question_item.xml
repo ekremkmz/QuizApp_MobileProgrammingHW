@@ -6,7 +6,7 @@
     app:cardBackgroundColor="@color/card_background_color"
     app:cardCornerRadius="10dp"
     app:cardElevation="20dp"
-    android:layout_marginBottom="20dp">
+    android:layout_margin="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -29,11 +29,37 @@
                 android:textStyle="bold" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/listQuestionItemButton"
+                android:id="@+id/listQuestionItemRemoveButton"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginLeft="10dp"
-                android:background="@drawable/expandable_button"
+                android:background="@drawable/ripple_card_button"
+                android:clickable="true"
+                android:gravity="center"
+                app:backgroundTint="@color/expandable_button_color"
+                app:icon="@drawable/remove_icon"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/listQuestionItemEditButton"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/ripple_card_button"
+                android:clickable="true"
+                android:gravity="center"
+                app:backgroundTint="@color/expandable_button_color"
+                app:icon="@drawable/edit_icon"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/listQuestionItemExpandButton"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/ripple_card_button"
                 android:clickable="true"
                 android:gravity="center"
                 app:backgroundTint="@color/expandable_button_color"

@@ -26,7 +26,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/removeicon"
+        android:src="@drawable/remove_icon"
         app:fabCustomSize="30dp"
         android:backgroundTint="@color/red"
         />

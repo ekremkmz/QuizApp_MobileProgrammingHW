@@ -2,6 +2,8 @@ package tr.edu.yildiz.ekremkamaz;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -20,16 +22,30 @@ public class AddQuestionActivity extends AppCompatActivity implements View.OnCli
     EditText editTextTitle;
     DatabaseHelper DBHelper;
     int userId;
+    boolean edit = false;
+    Question question;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_question);
-        userId = getIntent().getExtras().getInt("user_id");
         defineVariables();
         defineListeners();
-        addNewItem();
-        addNewItem();
+        edit = getIntent().hasExtra("question");
+        if (edit) {
+            question = getIntent().getParcelableExtra("question");
+            question.getChoices().forEach((item) -> {
+                addNewItem(item);
+            });
+            userId = question.getUser_Id();
+            editTextTitle.setText(question.getTitle());
+            ((RadioButton) choices.getChildAt(question.getAnswer()).findViewById(R.id.radio)).setChecked(true);
+            //TODO implement content
+        } else {
+            userId = getIntent().getExtras().getInt("user_id");
+            addNewItem("");
+            addNewItem("");
+        }
     }
 
     private void defineListeners() {
@@ -45,10 +61,11 @@ public class AddQuestionActivity extends AppCompatActivity implements View.OnCli
         DBHelper = DatabaseHelper.getInstance(getApplicationContext());
     }
 
-    void addNewItem() {
+    void addNewItem(String choice) {
         View view = getLayoutInflater().inflate(R.layout.add_question_item, choices, false);
         view.findViewById(R.id.removeItem).setOnClickListener(this);
         view.findViewById(R.id.radio).setOnClickListener(this);
+        ((EditText) view.findViewById(R.id.choice)).setText(choice);
         choices.addView(view);
     }
 
@@ -59,7 +76,7 @@ public class AddQuestionActivity extends AppCompatActivity implements View.OnCli
                 saveQuestion();
                 break;
             case R.id.addItem:
-                addNewItem();
+                addNewItem("");
                 if (choices.getChildCount() >= 5) {
                     addItem.setEnabled(false);
                 }
@@ -90,7 +107,6 @@ public class AddQuestionActivity extends AppCompatActivity implements View.OnCli
             String s = ((EditText) choices.getChildAt(i).findViewById(R.id.choice)).getText().toString();
             list.add(s);
         }
-        String choicesStr = String.join("$$$", list);
         int answer = -1;
         for (int i = 0; i < choices.getChildCount(); i++) {
             if (((RadioButton) choices.getChildAt(i).findViewById(R.id.radio)).isChecked()) {
@@ -101,13 +117,26 @@ public class AddQuestionActivity extends AppCompatActivity implements View.OnCli
             Toast.makeText(this, "Doğru şıkkı işaretleyiniz", Toast.LENGTH_LONG).show();
             return;
         }
+        //TODO implement content
         String content_type = "";
         String content_path = "";
-        if (DBHelper.addQuestion(userId, title, list.size(), choicesStr, answer, content_type, content_path)) {
-            Toast.makeText(this, "Soru kaydedildi", Toast.LENGTH_LONG).show();
+        boolean result;
+        if (edit) {
+            Question editedQ = new Question(title, list.size(), list, answer, content_type, content_path, question.getId(), userId);
+            result = DBHelper.updateQuestion(editedQ);
+            Intent _intent = new Intent();
+            _intent.putExtra("question", editedQ);
+            _intent.putExtra("position", getIntent().getExtras().getInt("position"));
+            setResult(Activity.RESULT_OK, _intent);
+        } else {
+            result = DBHelper.addQuestion(new Question(title, list.size(), list, answer, content_type, content_path, 0, userId));
+        }
+
+        if (result) {
+            Toast.makeText(this, edit ? "Soru güncellendi" : "Soru kaydedildi", Toast.LENGTH_LONG).show();
             finish();
         } else {
-            Toast.makeText(this, "Soru kaydedilemedi!!!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, edit ? "Soru güncellenemedi!!!" : "Soru kaydedilemedi!!!", Toast.LENGTH_LONG).show();
         }
     }
 

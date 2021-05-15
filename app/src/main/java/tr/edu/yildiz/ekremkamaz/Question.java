@@ -1,8 +1,11 @@
 package tr.edu.yildiz.ekremkamaz;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
-public class Question {
+public class Question implements Parcelable {
     String title;
     int level;
     ArrayList<String> choices;
@@ -10,14 +13,50 @@ public class Question {
     String content_type;
     String content_path;
     boolean expanded = false;
+    int id;
+    int user_id;
 
-    public Question(String title, int level, ArrayList<String> choices, int answer, String content_type, String content_path) {
+    public Question(String title, int level, ArrayList<String> choices, int answer, String content_type, String content_path, int id, int user_id) {
         this.title = title;
         this.level = level;
         this.choices = choices;
         this.answer = answer;
         this.content_type = content_type;
         this.content_path = content_path;
+        this.id = id;
+        this.user_id = user_id;
+    }
+
+    protected Question(Parcel in) {
+        title = in.readString();
+        level = in.readInt();
+        choices = in.createStringArrayList();
+        answer = in.readInt();
+        content_type = in.readString();
+        content_path = in.readString();
+        expanded = in.readByte() != 0;
+        id = in.readInt();
+        user_id = in.readInt();
+    }
+
+    public static final Creator<Question> CREATOR = new Creator<Question>() {
+        @Override
+        public Question createFromParcel(Parcel in) {
+            return new Question(in);
+        }
+
+        @Override
+        public Question[] newArray(int size) {
+            return new Question[size];
+        }
+    };
+
+    int getUser_Id() {
+        return user_id;
+    }
+
+    int getId() {
+        return id;
     }
 
     public boolean getExpanded() {
@@ -50,5 +89,23 @@ public class Question {
 
     public String getContent_path() {
         return content_path;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(title);
+        parcel.writeInt(level);
+        parcel.writeStringList(choices);
+        parcel.writeInt(answer);
+        parcel.writeString(content_type);
+        parcel.writeString(content_path);
+        parcel.writeByte((byte) (expanded ? 1 : 0));
+        parcel.writeInt(id);
+        parcel.writeInt(user_id);
     }
 }
