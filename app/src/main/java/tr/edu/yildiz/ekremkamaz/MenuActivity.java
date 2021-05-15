@@ -24,6 +24,9 @@ public class MenuActivity extends AppCompatActivity {
     int[] drawables = {R.drawable.menuadd, R.drawable.menulist, R.drawable.menuexam, R.drawable.menusettings};
     String[] names = {"Soru Ekle", "Soruları Listele", "Sınavlar", "Sınav Ayarları"};
     private User _user;
+    private TextView wellComeMessage;
+    private TextView userMailAdress;
+    private ImageView userAvatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +47,13 @@ public class MenuActivity extends AppCompatActivity {
                         _intent.putExtra("user_id", _user.getId());
                         startActivity(_intent);
                     }
-                        break;
+                    break;
                     case 1: {
                         Intent _intent = new Intent(MenuActivity.this, ListQuestionsActivity.class);
                         _intent.putExtra("user_id", _user.getId());
                         startActivity(_intent);
                     }
-                        break;
+                    break;
                     case 2:
                         break;
                     case 3:
@@ -64,6 +67,13 @@ public class MenuActivity extends AppCompatActivity {
 
     private void defineVariables() {
         _user = getIntent().getParcelableExtra("user");
+        wellComeMessage = findViewById(R.id.userWellcomeMessage);
+        userMailAdress = findViewById(R.id.userMailAdress);
+        userAvatar = findViewById(R.id.userAvatar);
+        userAvatar = findViewById(R.id.userAvatar);
+        wellComeMessage.setText("Hoşgeldin, " + _user.getName() + " " + _user.getSurname());
+        userMailAdress.setText(_user.getEmail());
+        userAvatar.setImageResource(getResources().getIdentifier(_user.getAvatar(), "drawable", getPackageName()));
         gridView = findViewById(R.id.gridView2);
         GridAdapter gridAdapter = new GridAdapter(names, drawables, this);
         gridView.setAdapter(gridAdapter);
