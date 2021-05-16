@@ -1,12 +1,14 @@
 package tr.edu.yildiz.ekremkamaz;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button _buttonSignIn;
     private Button _buttonSignUp;
     private DatabaseHelper DBHelper;
+    int attemp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         _defineVariables();
         _defineListeners();
-        startActivity(new Intent(MainActivity.this, ListQuestionsActivity.class));
+        startActivity(new Intent(MainActivity.this, AddQuestionActivity.class));
     }
 
     private void _defineListeners() {
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void _defineVariables() {
+        attemp = 0;
         _emailEditText = findViewById(R.id.editTextEmailAddress);
         _passwordEditText = findViewById(R.id.editTextPassword);
         _buttonSignIn = findViewById(R.id.buttonSignIn);
@@ -67,6 +71,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     _user.getAvatar();
                 } catch (NullPointerException e) {
+                    attemp++;
+                    if (attemp == 3) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("Uyarı");
+                        builder.setMessage("Şifrenizi 3 kez hatalı girdiniz. Üye olma sayfasına gitmek ister misiniz?");
+                        builder.setNegativeButton("Hayır", null);
+                        builder.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent _intent = new Intent(MainActivity.this, SignUpActivity.class);
+                                startActivity(_intent);
+                            }
+                        });
+                        builder.show();
+                        attemp = 0;
+                    }
                     _passwordEditText.setError("Wrong password!!!");
                     return;
                 }

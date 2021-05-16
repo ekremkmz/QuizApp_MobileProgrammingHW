@@ -1,5 +1,6 @@
 package tr.edu.yildiz.ekremkamaz;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,6 +10,12 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -76,7 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
     }
 
-    public boolean addQuestion(Question question) {
+    public boolean addQuestion(Question question, Activity activity) throws IOException {
         openDatabase();
         ContentValues cv = new ContentValues();
         cv.put("user_id", question.getUser_Id());
@@ -84,8 +91,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("level", question.getLevel());
         cv.put("choices", String.join("$$$", question.getChoices()));
         cv.put("answer", question.getAnswer());
+        File destFile = new File(activity.getFilesDir().getPath() +"/"+ question.getUser_Id() + "_" + question.getId());
         cv.put("content_type", question.getContent_type());
-        cv.put("content_path", question.getContent_path());
+        cv.put("content_path", destFile.getPath());
+        copyFile(new File(question.getContent_path()), destFile);
 
         long result = DB.insert("questions", null, cv);
 
@@ -93,6 +102,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
         else
             return false;
+    }
+
+    public void copyFile(File src, File dst) throws IOException {
+        FileInputStream inStream = new FileInputStream(src);
+        FileOutputStream outStream = new FileOutputStream(dst);
+        FileChannel inChannel = inStream.getChannel();
+        FileChannel outChannel = outStream.getChannel();
+        inChannel.transferTo(0, inChannel.size(), outChannel);
+        inStream.close();
+        outStream.close();
     }
 
     public ArrayList<Question> getQuestions(int user_id) {
