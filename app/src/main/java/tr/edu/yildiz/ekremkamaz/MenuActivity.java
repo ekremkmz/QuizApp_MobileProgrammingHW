@@ -56,7 +56,10 @@ public class MenuActivity extends AppCompatActivity {
                     break;
                     case 2:
                         break;
-                    case 3:
+                    case 3:{
+                        Intent _intent = new Intent(MenuActivity.this, ExamSettingsActivity.class);
+                        startActivity(_intent);
+                    }
                         break;
                     default:
                         break;
