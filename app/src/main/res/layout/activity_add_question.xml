@@ -6,29 +6,82 @@
     android:layout_height="match_parent"
     tools:context=".AddQuestionActivity">
 
-    <EditText
-        android:id="@+id/editTextTitle"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:hint="Soru"
-        android:inputType="textMultiLine" />
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-    <LinearLayout
-        android:id="@+id/choices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTextTitle"
-        android:orientation="vertical" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addItem"
-        android:src="@drawable/add_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/choices"
-        android:layout_centerHorizontal="true" />
+            <EditText
+                android:id="@+id/editTextTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:hint="Soru"
+                android:inputType="textMultiLine" />
 
+            <LinearLayout
+                android:id="@+id/choices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextTitle"
+                android:orientation="vertical" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/addItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/choices"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/add_button" />
+
+
+            <LinearLayout
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/addItem"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/contentType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/contentPath"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:text="" />
+
+                </LinearLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/removeContent"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="20dp"
+                    android:backgroundTint="@color/red"
+                    android:src="@drawable/remove_icon"
+                    app:fabCustomSize="30dp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/save"
@@ -36,12 +89,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:src="@drawable/check_icon" />
 
-    <com.nambimobile.widgets.efab.ExpandableFabLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.nambimobile.widgets.efab.ExpandableFabLayout
         android:id="@+id/expandable_fab_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -78,7 +130,7 @@
             app:label_textColor="#FFC0CB" />
 
         <com.nambimobile.widgets.efab.FabOption
-            android:id="@+id/addSes"
+            android:id="@+id/addAudio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_color="#5283F5"
