@@ -13,6 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EkremKamaz">
+        <activity android:name=".AddExamActivity"></activity>
+        <activity android:name=".ExamActivity" />
         <activity android:name=".ExamSettingsActivity" />
         <activity android:name=".ListQuestionsActivity" />
         <activity android:name=".AddQuestionActivity" />

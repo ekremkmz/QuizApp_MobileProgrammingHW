@@ -2,7 +2,6 @@ package tr.edu.yildiz.ekremkamaz;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import tr.edu.yildiz.ekremkamaz.model.User;
 
 public class MenuActivity extends AppCompatActivity {
     private ArrayList<String> assetNames;
@@ -54,13 +55,18 @@ public class MenuActivity extends AppCompatActivity {
                         startActivity(_intent);
                     }
                     break;
-                    case 2:
-                        break;
-                    case 3:{
-                        Intent _intent = new Intent(MenuActivity.this, ExamSettingsActivity.class);
+                    case 2:{
+                        Intent _intent = new Intent(MenuActivity.this, ExamActivity.class);
+                        _intent.putExtra("user_id", _user.getId());
                         startActivity(_intent);
                     }
                         break;
+                    case 3: {
+                        Intent _intent = new Intent(MenuActivity.this, ExamSettingsActivity.class);
+                        _intent.putExtra("user_id", _user.getId());
+                        startActivity(_intent);
+                    }
+                    break;
                     default:
                         break;
                 }
@@ -117,7 +123,7 @@ public class MenuActivity extends AppCompatActivity {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             if (view == null) {
-                view = layoutInflater.inflate(R.layout.menu_item, viewGroup, false);
+                view = layoutInflater.inflate(R.layout.item_menu, viewGroup, false);
             }
             TextView textView = view.findViewById(R.id.menuText);
             ImageView imageView = view.findViewById(R.id.menuImage);

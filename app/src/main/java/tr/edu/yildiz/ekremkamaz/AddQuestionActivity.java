@@ -10,8 +10,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
@@ -27,8 +29,11 @@ import android.widget.VideoView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nambimobile.widgets.efab.FabOption;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import tr.edu.yildiz.ekremkamaz.model.Question;
 
 public class AddQuestionActivity extends AppCompatActivity implements View.OnClickListener {
     LinearLayout choices;
@@ -44,7 +49,7 @@ public class AddQuestionActivity extends AppCompatActivity implements View.OnCli
     FabOption addVideo;
     TextView contentType;
     TextView contentPath;
-    int userId = 1;
+    int userId;
     boolean edit = false;
     static final int IMAGE_REQUEST = 1;
     static final int AUDIO_REQUEST = 2;
@@ -67,9 +72,19 @@ public class AddQuestionActivity extends AppCompatActivity implements View.OnCli
             userId = question.getUser_Id();
             editTextTitle.setText(question.getTitle());
             ((RadioButton) choices.getChildAt(question.getAnswer()).findViewById(R.id.radio)).setChecked(true);
-            //TODO implement content
+            String content_type = question.getContent_type();
+            if (content_type.equals("Image")) {
+                handleContent(IMAGE_REQUEST, Uri.fromFile(new File(question.getContent_path())));
+            } else if (content_type.equals("Video")) {
+                handleContent(VIDEO_REQUEST, Uri.fromFile(new File(question.getContent_path())));
+            } else if (content_type.equals("Audio")) {
+                handleContent(AUDIO_REQUEST, Uri.fromFile(new File(question.getContent_path())));
+            } else {
+                content.setVisibility(View.GONE);
+            }
+
         } else {
-            //userId = getIntent().getExtras().getInt("user_id");
+            userId = getIntent().getExtras().getInt("user_id");
             addNewItem("");
             addNewItem("");
             content.setVisibility(View.GONE);
@@ -102,7 +117,7 @@ public class AddQuestionActivity extends AppCompatActivity implements View.OnCli
     }
 
     void addNewItem(String choice) {
-        View view = getLayoutInflater().inflate(R.layout.add_question_item, choices, false);
+        View view = getLayoutInflater().inflate(R.layout.item_add_question, choices, false);
         view.findViewById(R.id.removeItem).setOnClickListener(this);
         view.findViewById(R.id.radio).setOnClickListener(this);
         ((EditText) view.findViewById(R.id.choice)).setText(choice);
@@ -198,55 +213,74 @@ public class AddQuestionActivity extends AppCompatActivity implements View.OnCli
                 contentPath.setText("");
             }
             Uri uri = data.getData();
-            switch (requestCode) {
-                case IMAGE_REQUEST: {
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                        ImageView imageView = new ImageView(this);
-                        imageView.setImageBitmap(bitmap);
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(300, 300);
-                        layoutParams.setMargins(10, 10, 10, 10);
-                        imageView.setLayoutParams(layoutParams);
-                        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        imageView.setImageBitmap(bitmap);
-                        content.addView(imageView, 0);
-                        content.setVisibility(View.VISIBLE);
-                        contentType.setText("Image");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-                case VIDEO_REQUEST: {
+            handleContent(requestCode, uri);
+        }
+    }
 
-                    FrameLayout frameLayout = new FrameLayout(AddQuestionActivity.this);
-
-                    VideoView videoView = new VideoView(this);
-                    FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT);
-
+    public void handleContent(int requestCode, Uri uri) {
+        switch (requestCode) {
+            case IMAGE_REQUEST: {
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                    ImageView imageView = new ImageView(this);
+                    imageView.setImageBitmap(bitmap);
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(300, 300);
                     layoutParams.setMargins(10, 10, 10, 10);
-                    videoView.setLayoutParams(layoutParams);
-
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                    lp.setMargins(50, 50, 50, 0);
-                    frameLayout.setLayoutParams(lp);
-
-                    MediaController mediaController = new MediaController(videoView.getContext());
-                    mediaController.setAnchorView(videoView);
-                    mediaController.setMediaPlayer(videoView);
-
-                    videoView.setVideoURI(uri);
-                    videoView.setMediaController(mediaController);
-
-                    frameLayout.addView(videoView);
-
-                    content.addView(frameLayout, 0);
-                    contentType.setText("Video");
-
+                    imageView.setLayoutParams(layoutParams);
+                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    imageView.setImageBitmap(bitmap);
+                    content.addView(imageView, 0);
                     content.setVisibility(View.VISIBLE);
+                    contentType.setText("Image");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                break;
             }
+            break;
+            case VIDEO_REQUEST: {
+
+                FrameLayout frameLayout = new FrameLayout(AddQuestionActivity.this);
+
+                VideoView videoView = new VideoView(this);
+                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT);
+
+                layoutParams.setMargins(10, 10, 10, 10);
+                videoView.setLayoutParams(layoutParams);
+
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                lp.setMargins(50, 50, 50, 0);
+                frameLayout.setLayoutParams(lp);
+
+                MediaController mediaController = new MediaController(videoView.getContext());
+                mediaController.setAnchorView(videoView);
+                mediaController.setMediaPlayer(videoView);
+
+                videoView.setVideoURI(uri);
+                videoView.setMediaController(mediaController);
+
+                frameLayout.addView(videoView);
+
+                content.addView(frameLayout, 0);
+                contentType.setText("Video");
+
+                content.setVisibility(View.VISIBLE);
+            }
+
+            break;
+            default:
+                break;
+        }
+
+        if (edit) {//Get image location fromnternal storage
+            File file = new File(uri.getPath());
+            String path = null;
+            try {
+                path = file.getCanonicalPath();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            contentPath.setText(path == null ? "" : path);
+        } else {//External Storage
             String[] proj = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(uri, proj, null, null, null);
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);

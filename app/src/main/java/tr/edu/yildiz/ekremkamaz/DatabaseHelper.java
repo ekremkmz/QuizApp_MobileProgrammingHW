@@ -6,18 +6,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
-import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import tr.edu.yildiz.ekremkamaz.model.Exam;
+import tr.edu.yildiz.ekremkamaz.model.Question;
+import tr.edu.yildiz.ekremkamaz.model.User;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static DatabaseHelper DBHelper = null;
@@ -57,12 +57,62 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "    content_type text,\n" +
                 "    content_path text\n" +
                 ");");
+        db.execSQL("CREATE TABLE exams (\n" +
+                "    id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "    user_id INTEGER,\n" +
+                "    title text,\n" +
+                "    questions text,\n" +
+                "    level INTEGER,\n" +
+                "    time INTEGER,\n" +
+                "    point INTEGER\n" +
+                ");");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         db.execSQL("DROP TABLE IF EXISTS users");
         onCreate(db);
+    }
+
+
+    public boolean deleteExam(Exam exam) {
+        openDatabase();
+        int result = DB.delete("exams", "id=?", new String[]{String.valueOf(exam.getId())});
+        if (result > -1)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean addExam(Exam exam) {
+        openDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("user_id", exam.getUser_id());
+        cv.put("title", exam.getTitle());
+        cv.put("questions", String.join(",", exam.getQuestions()));
+        cv.put("level", exam.getLevel());
+        cv.put("time", exam.getTime());
+        cv.put("point", exam.getPoint());
+        long result = DB.insert("exams", null, cv);
+
+        if (result > -1)
+            return true;
+        else
+            return false;
+    }
+
+    public ArrayList<Exam> getExams(int user_id) {
+        openDatabase();
+        String[] columns = {"title", "level", "questions", "time", "point", "id"};
+
+        String[] args = {String.valueOf(user_id)};
+        Cursor c = DB.query("exams", columns, "user_id=?", args, null, null, null);
+        ArrayList<Exam> examArrayList = new ArrayList<>();
+        while (c.moveToNext()) {
+            ArrayList<String> questions = new ArrayList<>(Arrays.asList(c.getString(2).split(",")));
+            examArrayList.add(new Exam(c.getString(0), c.getInt(1), c.getInt(3), c.getInt(4), questions, c.getInt(5), user_id));
+        }
+        return examArrayList;
     }
 
     public boolean addUser(String avatar, String name, String surname, String email, String number, String password, String birthday) {
@@ -91,10 +141,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("level", question.getLevel());
         cv.put("choices", String.join("$$$", question.getChoices()));
         cv.put("answer", question.getAnswer());
-        File destFile = new File(activity.getFilesDir().getPath() +"/"+ question.getUser_Id() + "_" + question.getId());
         cv.put("content_type", question.getContent_type());
-        cv.put("content_path", destFile.getPath());
-        copyFile(new File(question.getContent_path()), destFile);
+
+        if (question.getContent_type().equals("")) {
+            cv.put("content_path", question.getContent_type());
+        } else {
+            File destFile = new File(activity.getFilesDir().getPath() + "/" + question.getUser_Id() + "_" + question.getId());
+            cv.put("content_path", destFile.getPath());
+            copyFile(new File(question.getContent_path()), destFile);
+        }
 
         long result = DB.insert("questions", null, cv);
 
@@ -128,6 +183,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return questionArrayList;
     }
 
+    public Question getQuestion(int id) {
+        openDatabase();
+        String[] columns = {"title", "level", "choices", "answer", "content_type", "content_path", "id", "user_id"};
+
+        String[] args = {String.valueOf(id)};
+        Cursor c = DB.query("questions", columns, "id=?", args, null, null, null);
+        c.moveToNext();
+        ArrayList<String> choices = new ArrayList<>(Arrays.asList(c.getString(2).split("\\Q$$$\\E")));
+
+        return new Question(c.getString(0), c.getInt(1), choices, c.getInt(3), c.getString(4), c.getString(5), c.getInt(6), c.getInt(7));
+    }
+
     public boolean deleteQuestion(Question question) {
         openDatabase();
         int result = DB.delete("questions", "id=?", new String[]{String.valueOf(question.getId())});
@@ -139,6 +206,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean updateQuestion(Question question) {
         openDatabase();
+        Question oldQuestion = getQuestion(question.getId());
+        if (!oldQuestion.getContent_path().equals(question.getContent_path())) {
+            //Deleting old files
+            File file = new File(oldQuestion.getContent_path());
+            file.delete();
+        }
         ContentValues cv = new ContentValues();
         cv.put("user_id", question.getUser_Id());
         cv.put("title", question.getTitle());

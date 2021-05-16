@@ -33,7 +33,7 @@ public class AvatarChooserDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.avatar_chooser_dialog);
+        setContentView(R.layout.dialog_avatar_chooser);
         Resources resources = getContext().getResources();
         gridView = (GridView) findViewById(R.id.gridView);
         for (int i = 110; i <= 149; i++) {

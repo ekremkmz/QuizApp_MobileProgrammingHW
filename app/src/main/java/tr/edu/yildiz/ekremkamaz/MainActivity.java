@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import java.security.NoSuchAlgorithmException;
 
+import tr.edu.yildiz.ekremkamaz.model.User;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText _emailEditText;
     private EditText _passwordEditText;
@@ -29,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         _defineVariables();
         _defineListeners();
-        startActivity(new Intent(MainActivity.this, AddQuestionActivity.class));
     }
 
     private void _defineListeners() {

@@ -1,4 +1,4 @@
-package tr.edu.yildiz.ekremkamaz;
+package tr.edu.yildiz.ekremkamaz.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,15 +6,15 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 
 public class Question implements Parcelable {
-    String title;
-    int level;
-    ArrayList<String> choices;
-    int answer;
-    String content_type;
-    String content_path;
-    boolean expanded = false;
-    int id;
-    int user_id;
+    private String title;
+    private int level;
+    private ArrayList<String> choices;
+    private int answer;
+    private String content_type;
+    private String content_path;
+    private boolean expanded;
+    private int id;
+    private int user_id;
 
     public Question(String title, int level, ArrayList<String> choices, int answer, String content_type, String content_path, int id, int user_id) {
         this.title = title;
@@ -25,6 +25,7 @@ public class Question implements Parcelable {
         this.content_path = content_path;
         this.id = id;
         this.user_id = user_id;
+        expanded = false;
     }
 
     protected Question(Parcel in) {
@@ -51,11 +52,11 @@ public class Question implements Parcelable {
         }
     };
 
-    int getUser_Id() {
+    public int getUser_Id() {
         return user_id;
     }
 
-    int getId() {
+    public int getId() {
         return id;
     }
 

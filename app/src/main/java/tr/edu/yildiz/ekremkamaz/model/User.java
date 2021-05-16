@@ -1,4 +1,4 @@
-package tr.edu.yildiz.ekremkamaz;
+package tr.edu.yildiz.ekremkamaz.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

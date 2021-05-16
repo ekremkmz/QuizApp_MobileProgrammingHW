@@ -24,12 +24,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+import tr.edu.yildiz.ekremkamaz.model.Question;
+
 public class ListQuestionsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<Question> questions;
     private DatabaseHelper DBHelper;
-    //TODO fix at the end
-    private int user_id = 1;
+    private int user_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +40,7 @@ public class ListQuestionsActivity extends AppCompatActivity {
     }
 
     private void defineVariables() {
-        //TODO fix at the end
-        //user_id = getIntent().getExtras().getInt("user_id");
+        user_id = getIntent().getIntExtra("user_id", 1);
         recyclerView = (RecyclerView) findViewById(R.id.questionsRecyclerView);
         DBHelper = DatabaseHelper.getInstance(getApplicationContext());
         questions = DBHelper.getQuestions(user_id);
@@ -69,7 +69,7 @@ public class ListQuestionsActivity extends AppCompatActivity {
             Context context = parent.getContext();
             LayoutInflater inflater = LayoutInflater.from(context);
 
-            View question = inflater.inflate(R.layout.list_question_item, parent, false);
+            View question = inflater.inflate(R.layout.item_list_question, parent, false);
 
             ViewHolder viewHolder = new ViewHolder(question);
 
@@ -87,7 +87,7 @@ public class ListQuestionsActivity extends AppCompatActivity {
 
             choices.removeAllViewsInLayout();
             for (int i = 0; i < question.getLevel(); i++) {
-                View view = inflater.inflate(R.layout.list_question_choice, null);
+                View view = inflater.inflate(R.layout.item_list_question_choice, null);
                 RadioButton radioButton = view.findViewById(R.id.listQuestionItemRadio);
                 if (question.getAnswer() == i) {
                     radioButton.setChecked(true);
@@ -114,7 +114,7 @@ public class ListQuestionsActivity extends AppCompatActivity {
             return questions.size();
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             public TextView titleTextView;
             public MaterialButton expandButton;
             public MaterialButton editButton;
