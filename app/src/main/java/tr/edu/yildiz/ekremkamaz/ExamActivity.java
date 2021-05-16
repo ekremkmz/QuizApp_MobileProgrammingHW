@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 import tr.edu.yildiz.ekremkamaz.model.Exam;
@@ -54,6 +58,7 @@ public class ExamActivity extends AppCompatActivity implements View.OnClickListe
 
     private void defineListeners() {
         add.setOnClickListener(this);
+
     }
 
     @Override
@@ -150,7 +155,17 @@ public class ExamActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
                     case R.id.listExamItemShareButton: {
+                        try {
+                            File file = examArrayList.get(position).toFile(getApplicationContext());
+                            Intent _intent = new Intent();
+                            _intent.setAction(Intent.ACTION_SEND);
+                            _intent.setType("text/plain");
+                            _intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
 
+                            startActivity(Intent.createChooser(_intent, "Sınavı paylaş"));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                     break;
                     default:

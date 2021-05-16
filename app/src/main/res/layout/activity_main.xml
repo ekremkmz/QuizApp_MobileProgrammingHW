@@ -4,27 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:exported="true"
-    tools:context=".MainActivity"
     android:background="@color/white"
-    android:padding="70sp">
+    android:exported="true"
+    android:padding="70sp"
+    tools:context=".MainActivity">
 
     <EditText
         android:id="@+id/editTextEmailAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="200sp"
         android:ems="10"
-        android:inputType="textEmailAddress"
-        android:layout_marginTop="200sp"/>
+        android:hint="example@example.com"
+        android:inputType="textEmailAddress" />
 
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/editTextEmailAddress"
         android:ems="10"
-        android:inputType="textPassword"
-        android:layout_below="@id/editTextEmailAddress"/>
-
+        android:hint="********"
+        android:inputType="textPassword" />
 
 
     <Button
@@ -41,5 +42,5 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/buttonSignIn"
         android:layout_alignStart="@id/editTextPassword"
-        android:text="Sign Up"/>
+        android:text="Sign Up" />
 </RelativeLayout>

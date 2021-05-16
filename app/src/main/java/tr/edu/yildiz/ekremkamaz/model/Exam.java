@@ -1,8 +1,12 @@
 package tr.edu.yildiz.ekremkamaz.model;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Exam implements Parcelable {
@@ -88,5 +92,27 @@ public class Exam implements Parcelable {
         parcel.writeStringList(questions);
         parcel.writeInt(id);
         parcel.writeInt(user_id);
+    }
+
+
+    public File toFile(Context context) throws IOException {
+        File file = File.createTempFile("exam", ".txt", context.getExternalCacheDir());
+
+        String data = new String();
+
+        data = "title=" + title + "\n" +
+                "level=" + String.valueOf(level) + "\n" +
+                "time=" + String.valueOf(time) + "\n" +
+                "point=" + String.valueOf(point) + "\n" +
+                "questions=" + String.join(",", questions);
+
+
+        FileOutputStream stream = new FileOutputStream(file);
+
+        stream.write(data.getBytes());
+
+        stream.close();
+
+        return file;
     }
 }
